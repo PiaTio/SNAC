@@ -1,6 +1,7 @@
  ### Simulating normal distributed dataset consisting of 2 data blocks/sources with an underlying component structure contianing 1 common component and 2 unique components
 
 simdata_1C2U2B <- function(m, b1, b2){
+  ### Simulating data; 1 common comp, 2 unique comp, 2 blocks
   #Number of participants
   m = m
   #Block sizes
@@ -82,5 +83,3 @@ simdata_1C2U2B <- function(m, b1, b2){
   return(list(X, cov, inv, ginv, cov1, inv1, ginv1, Vdstar, Sstar, Vstar))
   
 }
-
-
