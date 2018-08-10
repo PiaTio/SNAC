@@ -44,25 +44,25 @@ SNAC(data, b1, b2, R, lasso = 0.002, NStart = 1, method, nfolds = 10, MaxIter = 
   Tmatrix <- final$Tmatrix
   
   #Find common components
-  common = NULL
+  common <- NULL
   for (c in 1:ncol(final$Pmatrix)){ #look per component whether it is a common or distinctive one
-    s = 0
-    d = NULL
+    s <- 0
+    d <- NULL
     for (j in 1:length(Jk)){
-      d[j] = sum(abs(final$Pmatrix[(s+1):(s+Jk[j]),c]))
+      d[j] <- sum(abs(final$Pmatrix[(s+1):(s+Jk[j]),c]))
       if(d[j]!=0) {d[j] = 1}
-      s = sum(Jk[1:j])
+      s <- sum(Jk[1:j])
     }
     if (sum(d)>= 2) {common = c(common, c)} #common component is defined as having variables of at least two blocks
   }
-  TmatCommon = final$Tmatrix[,common]
-  PmatCommon = final$Pmatrix[,common]
+  TmatCommon <- final$Tmatrix[,common]
+  PmatCommon <- final$Pmatrix[,common]
   
   #Create data set based on common components
-  Xcom = TmatCommon%*%t(PmatCommon)
+  Xcom <- TmatCommon%*%t(PmatCommon)
   
   #Graphical lasso
-  SigmaINVC_hat = glasso(s = cov(Xcom), rho = lasso, penalize.diagonal = FALSE)$wi
+  SigmaINVC_hat <- glasso(s = cov(Xcom), rho = lasso, penalize.diagonal = FALSE)$wi
   
   return(SigmaINVC_hat)
 }
