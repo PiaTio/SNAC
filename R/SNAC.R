@@ -1,8 +1,20 @@
 ###Sparse Network And Component analysis
-##Integrating multi-source informatie using component and network analysis 
+##Integrating two information sources using component and network analysis.  
+##
+##data: Data file with subjects as rows and variables as columns. Variables should be grouped per data block
+##b1: The number of variables in block 1
+##b2: The number of variables in block 2
+##R: The number of components
+##lasso: lambda for graphical lasso. Default is set at 0.002
+##NStart: The number of multistarts for the cross-validation algorithm. Default is set to 1. 
+##method: "datablock" or "component". These are two options with respect to the grouping of the loadings as used in the Group Lasso penalty. 
+##If method="component", the block-grouping of the coefficients is applied per component separately. If method = "datablock", the grouping is applied on the 
+##concatenated data block, with loadings of all components together. If method is missing, then the "component" method is used by default.
+##nfolds: The number of folds. If missing, then 10 fold cross-validation will be performed.
+##MaxIter: Maximum number of iterations for the cross-validation algorithm. Default is set to 400. 
 
 
-SNAC(data, b1, b2, R, stand = TRUE, lasso = 0.002, NStart, method){
+SNAC(data, b1, b2, R, lasso = 0.002, NStart = 1, method, nfolds = 10, MaxIter = 400){
   if(is.numeric(b1)==FALSE){
     stop("b1 is not a numeric entry.")
   }
@@ -18,13 +30,13 @@ SNAC(data, b1, b2, R, stand = TRUE, lasso = 0.002, NStart, method){
   maxSeq <- maxLGlasso(DATA = data, Jk = Jk, R = R)
   
   para <- cv_sparseSCA(DATA = data, Jk = Jk, R = R, LassoSequence = seq(0.0001, maxLGasso$Lasso, length.out = 50), 
-               GLassoSequence = seq(0.00001, maxLGasso$Glasso, length.out = 50), NRSTARTS = NStart)
+               GLassoSequence = seq(0.00001, maxLGasso$Glasso, length.out = 50), NRSTARTS = NStart, nfolds = nfolds, MaxIter = MaxIter)
   
   #Run SCA
   results <- sparseSCA(DATA = data, Jk = Jk, R = R, 
             LASSO = para$RecommendedLambda[1], 
             GROUPLASSO = para$RecommendedLambda[2], 
-            NRSTART = NStart, method = method)
+            NRSTART = NStart, method = method, MaxIter = MaxIter)
   
   #Undo shrinkage done on the P and T matrices 
   final <- undoShrinkage(DATA = data, R = R, Phat = results$Pmatrix)
